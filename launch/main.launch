@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- #### DESCRIPTION #### -->
+    <!-- This launch file has to proceed following tasks:
+    - open gazebo with empty world
+    - spaw rotrac in gazebo
+    - enable controllers of rotrac
+    - open rviz  -->
+
+<launch>
+    <!-- Open Gazebo level_crossing world-->
+    <include file="$(find rotrac_e2_description)/launch/level_crossing.launch"/>
+    <!-- <include file="$(find rotrac_e2_description)/launch/gazebo_empty.launch"/> -->
+    <!-- Spawn robot -->
+    <include file="$(find rotrac_e2_description)/launch/spawn_rotrac.launch"/>
+    <!-- Enable controllers -->
+    <include file="$(find rotrac_e2_description)/launch/rotrac_e2_control.launch"/>
+    <!-- Visualize in Rviz   -->
+    <include file="$(find rotrac_e2_description)/launch/visualize_in_rviz.launch"/>
+    <!-- Run cmd_vel converter -->
+    <node pkg="rotrac_e2_description" type="convert_vels.py" name="cmd_converter"/>
+</launch>

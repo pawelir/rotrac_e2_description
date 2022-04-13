@@ -1,0 +1,969 @@
+<?xml version="1.0"?>
+<robot name="rotrac_e2">
+    
+    <material name="silver">
+        <color rgba=".75 .75 .875 1"/>
+    </material>
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+            
+    
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/rotrac_e2</robotNamespace>
+        </plugin>
+
+        <plugin name="gazebo_ros_imu_controller" filename="libgazebo_ros_imu.so">
+            <robotNamespace>/rotrac_e2</robotNamespace>
+            <topicName>imu/data</topicName>
+            <serviceName>imu/service</serviceName>
+            <bodyName>base_link</bodyName>
+            <gaussianNoise>0</gaussianNoise>
+            <rpyOffsets>0 0 0</rpyOffsets>
+            <updateRate>10.0</updateRate>
+            <alwaysOn>true</alwaysOn>
+            <gaussianNoise>0</gaussianNoise>
+        </plugin>
+    </gazebo>
+    
+    <link name="base_link">
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size=".01 .01 .01"/>
+            </geometry>
+        </collision>
+        
+    </link>
+    
+    
+    <!-- _______________________________________________ Body _______________________________________________ -->
+    <link name="mainbody_link">
+        <visual>
+            <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_body_white.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0.4" rpy="0 0 0"/>
+            <geometry>
+                <box size="1.2 1.8 0.9"/>
+            </geometry>
+        </collision>
+
+
+		<collision name='front_collision'>
+			<origin rpy="0 0 0" xyz="0.85 0 0.14"/>
+           	<geometry>
+           		<box size="0.5 0.84 0.45"/> 
+       		</geometry>
+       	</collision>
+
+       	<collision name='rear_collision'>
+           	<origin rpy="0 0 0" xyz="-0.85 0 0.14"/>
+           	<geometry>
+           		<box size="0.5 0.84 0.45"/>
+       		</geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0.35" rpy="0 0 0"/>
+            <mass value="3400"/>
+            <inertia ixx="700" iyy="1000" izz="1200" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="mainbody_link">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="fixed" type="fixed">
+        <parent link="base_link"/>
+        <child link="mainbody_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+    <link name="body_green_link">
+        <visual>
+            <origin xyz="0 0 -0.4" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_body_green5.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="body_green_link">
+        <material>Gazebo/Green</material>
+    </gazebo>
+    
+    <joint name="body_green_fixed" type="fixed">
+        <parent link="base_link"/>
+        <child link="body_green_link"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+    
+    <!-- _______________________________________________ Gummirad vorne rechts _______________________________________________ -->
+
+	<link name="front_right_wheel_white_link">
+        <visual>
+            <origin xyz="0 0 .35" rpy="-1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_white.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".7" radius=".045"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <mass value="35"/>
+            <inertia ixx="1.447" iyy="1.447" izz=".035" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    <gazebo reference="front_right_wheel_white_link">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="front_right_wheel_white_joint" type="continuous">
+        <parent link="mainbody_link"/>
+        <child link="front_right_wheel_white_link"/>
+        <origin rpy="-1.5708 0 0" xyz="0.575 -.35 0"/>
+        <limit effort="100" velocity="100" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="front_right_wheel_black_link">
+        <visual>
+            <origin xyz="0 0 .73" rpy="-1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".12" radius=".246"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="30"/>
+            <inertia ixx=".49" iyy=".49" izz=".91" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="front_right_wheel_black_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="front_right_wheel_black_joint" type="fixed">
+        <parent link="front_right_wheel_white_link"/>
+        <child link="front_right_wheel_black_link"/>
+        <origin rpy="0 0 0" xyz=".0 0 -.38"/>
+    </joint>
+
+    <!-- _______________________________________________ Gummirad vorne links _______________________________________________ -->
+    
+
+    <link name="front_left_wheel_white_link">
+        <visual>
+            <origin xyz="0 0 -.35" rpy="1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_white.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".7" radius=".045"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <mass value="35"/>
+            <inertia ixx="1.447" iyy="1.447" izz=".035" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    <gazebo reference="front_left_wheel_white_link">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="front_left_wheel_white_joint" type="continuous">
+        <parent link="mainbody_link"/>
+        <child link="front_left_wheel_white_link"/>
+        <origin rpy="-1.5708 0 0" xyz="0.575 .35 0"/>
+        <limit effort="100" velocity="100" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="front_left_wheel_black_link">
+        <visual>
+            <origin xyz="0 0 -.73" rpy="1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".12" radius=".246"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="30"/>
+            <inertia ixx=".49" iyy=".49" izz=".91" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="front_left_wheel_black_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="front_left_wheel_black_joint" type="fixed">
+        <parent link="front_left_wheel_white_link"/>
+        <child link="front_left_wheel_black_link"/>
+        <origin rpy="0 0 0" xyz=".0 0 .38"/>
+    </joint>
+    
+    <!-- _______________________________________________ Gummirad hinten rechts _______________________________________________ -->
+
+	<link name="rear_right_wheel_white_link">
+        <visual>
+            <origin xyz="0 0 .35" rpy="-1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_white.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".7" radius=".045"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <mass value="35"/>
+            <inertia ixx="1.447" iyy="1.447" izz=".035" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    <gazebo reference="rear_right_wheel_white_link">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="rear_right_wheel_white_joint" type="continuous">
+        <parent link="mainbody_link"/>
+        <child link="rear_right_wheel_white_link"/>
+        <origin rpy="-1.5708 0 0" xyz="-0.575 -.35 0"/>
+        <limit effort="100" velocity="100" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="rear_right_wheel_black_link">
+        <visual>
+            <origin xyz="0 0 .73" rpy="-1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".12" radius=".246"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="30"/>
+            <inertia ixx=".49" iyy=".49" izz=".91" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="rear_right_wheel_black_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="rear_right_wheel_black_joint" type="fixed">
+        <parent link="rear_right_wheel_white_link"/>
+        <child link="rear_right_wheel_black_link"/>
+        <origin rpy="0 0 0" xyz=".0 0 -.38"/>
+    </joint>
+
+    <!-- _______________________________________________ Gummirad hinten links _______________________________________________ -->
+
+	<link name="rear_left_wheel_white_link">
+        <visual>
+            <origin xyz="0 0 -.35" rpy="1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_white.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".7" radius=".045"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <mass value="35"/>
+            <inertia ixx="1.447" iyy="1.447" izz=".035" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    <gazebo reference="rear_left_wheel_white_link">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="rear_left_wheel_white_joint" type="continuous">
+        <parent link="mainbody_link"/>
+        <child link="rear_left_wheel_white_link"/>
+        <origin rpy="-1.5708 0 0" xyz="-0.575 .35 0"/>
+        <limit effort="100" velocity="100" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="rear_left_wheel_black_link">
+        <visual>
+            <origin xyz="0 0 -.73" rpy="1.570796327 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_wheel_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length=".12" radius=".246"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="30"/>
+            <inertia ixx=".49" iyy=".49" izz=".91" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="front_left_wheel_black_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="rear_left_wheel_black_joint" type="fixed">
+        <parent link="rear_left_wheel_white_link"/>
+        <child link="rear_left_wheel_black_link"/>
+        <origin rpy="0 0 0" xyz=".0 0 .38"/>
+    </joint>
+    
+    
+    <!-- _______________________________________________ Spurführungsrad-Achse vorne _______________________________________________ -->    
+    
+   
+    <link name="front_axle_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_axle_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size=".1 1.65 .1"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="475"/>
+            <inertia ixx="11.385" iyy=".083" izz="11.385" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="front_axle_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="front_axle_joint" type="prismatic">
+        <parent link="base_link"/>
+        <child link="front_axle_link"/>
+        <origin rpy="0 0 0" xyz="0.930109 0 -.026"/>
+		<limit effort="100" velocity="1" lower="0" upper="0.1" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="front_axle_right_wheel_link">
+        <collision>
+            <geometry>
+                <cylinder length=".08" radius=".06"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="10"/>
+            <inertia ixx=".014" iyy=".014" izz=".018" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    
+    <joint name="front_axle_right_wheel_joint" type="continuous">
+        <parent link="front_axle_link"/>
+        <child link="front_axle_right_wheel_link"/>
+        <origin rpy="1.570796327 0 0" xyz="0 -.75 -.16"/>
+		<limit effort="100" velocity="1" />
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="front_axle_guide_r_link">
+        <inertial>
+            <mass value="1"/>
+            <inertia ixx=".0233333" iyy=".0233333" izz=".005" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        <collision>
+            <geometry>
+                <cylinder length="0.06" radius=".015"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="front_axle_left_wheel_link">
+        <collision>
+            <geometry>
+                <cylinder length=".08" radius=".06"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="10"/>
+            <inertia ixx=".014" iyy=".014" izz=".018" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    
+    <joint name="front_axle_left_wheel_joint" type="continuous">
+        <parent link="front_axle_link"/>
+        <child link="front_axle_left_wheel_link"/>
+        <origin rpy="1.570796327 0 0" xyz="0 .75 -.16"/>
+		<limit effort="100" velocity="1" />
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <gazebo reference="front_axle_guide_r_link">
+        <mu1>0</mu1>
+        <mu2>0</mu2>
+    </gazebo>
+    
+    <joint name="front_axle_guide_r_joint" type="continuous">
+        <parent link="front_axle_link"/>
+        <child link="front_axle_guide_r_link"/>
+        <origin rpy="0 0 0" xyz="0 -.698 -.23"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="front_axle_guide_l_link">
+        <inertial>
+            <mass value="1"/>
+            <inertia ixx=".0233333" iyy=".0233333" izz=".005" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        <collision>
+            <geometry>
+                <cylinder length="0.06" radius=".015"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="front_axle_guide_l_link">
+        <mu1>0</mu1>
+        <mu2>0</mu2>
+    </gazebo>
+    
+    <joint name="front_axle_guide_l_joint" type="continuous">
+        <parent link="front_axle_link"/>
+        <child link="front_axle_guide_l_link"/>
+        <origin rpy="0 0 0" xyz="0 .698 -.23"/>
+        <axis xyz="0 0 1"/>
+    </joint>  
+    
+     <!-- _______________________________________________ Spurführungsrad-Achse hinten _______________________________________________ -->    
+    
+   
+    <link name="rear_axle_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/rotrac_e2_axle_black.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size=".1 1.65 .1"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="475"/>
+            <inertia ixx="11.385" iyy=".083" izz="11.385" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="rear_axle_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="rear_axle_joint" type="prismatic">
+        <parent link="base_link"/>
+        <child link="rear_axle_link"/>
+        <origin rpy="0 0 3.141592654" xyz="-0.930109 0 -.026"/>
+		<limit effort="100" velocity="1" lower="0" upper="0.1" />
+		<joint_properties damping="0.7"/>
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="rear_axle_right_wheel_link">
+        <collision>
+            <geometry>
+                <cylinder length=".08" radius=".06"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="10"/>
+            <inertia ixx=".014" iyy=".014" izz=".018" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    
+    <joint name="rear_axle_right_wheel_joint" type="continuous">
+        <parent link="rear_axle_link"/>
+        <child link="rear_axle_right_wheel_link"/>
+        <origin rpy="1.570796327 0 0" xyz="0 .75 -.16"/>
+		<limit effort="100" velocity="1" />
+		<axis xyz="0 0 1"/>
+    </joint>
+       
+    <link name="rear_axle_guide_r_link">
+        <inertial>
+            <mass value="1"/>
+            <inertia ixx=".0233333" iyy=".0233333" izz=".005" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        <collision>
+            <geometry>
+                <cylinder length="0.06" radius=".015"/>
+            </geometry>
+        </collision>
+    </link>
+ 
+    <gazebo reference="rear_axle_guide_r_link">
+        <mu1>0</mu1>
+        <mu2>0</mu2>
+    </gazebo>
+    
+    <joint name="rear_axle_guide_r_joint" type="continuous">
+        <parent link="rear_axle_link"/>
+        <child link="rear_axle_guide_r_link"/>
+        <origin rpy="0 0 0" xyz="0 .698 -.23"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    
+    
+    <link name="rear_axle_left_wheel_link">
+        <collision>
+            <geometry>
+                <cylinder length=".08" radius=".06"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="10"/>
+            <inertia ixx=".014" iyy=".014" izz=".018" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    
+    <joint name="rear_axle_left_wheel_joint" type="continuous">
+        <parent link="rear_axle_link"/>
+        <child link="rear_axle_left_wheel_link"/>
+        <origin rpy="1.570796327 0 0" xyz="0 -.75 -.16"/>
+		<limit effort="100" velocity="1" />
+		<axis xyz="0 0 1"/>
+    </joint>
+    
+    <link name="rear_axle_guide_l_link">
+        <inertial>
+            <mass value="1"/>
+            <inertia ixx=".0233333" iyy=".0233333" izz=".005" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        <collision>
+            <geometry>
+                <cylinder length="0.06" radius=".015"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="rear_axle_guide_l_link">
+        <mu1>0</mu1>
+        <mu2>0</mu2>
+    </gazebo>
+    
+    <joint name="rear_axle_guide_l_joint" type="continuous">
+        <parent link="rear_axle_link"/>
+        <child link="rear_axle_guide_l_link"/>
+        <origin rpy="0 0 0" xyz="0 -.698 -.23"/>
+        <axis xyz="0 0 1"/>
+    </joint> 
+    
+    
+    <!-- _______________________________________________ Kupplung _______________________________________________ -->
+    
+       
+    
+    <link name="couplerbase_link">
+        <visual>
+            <origin xyz="-.724 0 .6" rpy="0 0 3.141592654"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/E2_Kupplung_Basis.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <origin xyz="-.724 0 0.6" rpy="0 0 0"/>
+            <mass value="30"/>
+            <inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="couplerbase_link">
+        <material>Gazebo/DarkGrey</material>
+    </gazebo>
+    
+    <joint name="body_couplerbase_joint" type="fixed">
+        <parent link="mainbody_link"/>
+        <child link="couplerbase_link"/>
+    </joint>
+    
+    <link name="couplermouth_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 3.141592654"/>
+            <geometry>
+                <mesh filename="package://rotrac_e2_description/models/rotrac_e2/meshes/E2_Kupplung_Maul.dae" scale="1 1 1"/>
+            </geometry>
+        </visual>
+
+        <inertial>
+            <origin xyz="0 0 .1445" rpy="0 0 0"/>
+            <mass value="40"/>
+            <inertia ixx="0.5" iyy=".5" izz=".8" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+    <gazebo reference="couplermouth_link">
+        <material>Gazebo/Yellow</material>
+    </gazebo>
+    
+    <joint name="couplerbase_couplermouth_joint" type="revolute">
+        <parent link="couplerbase_link"/>
+        <child link="couplermouth_link"/>
+        <origin rpy="0 0 0" xyz="-.724 0 .6"/>
+        <limit lower="-.15" upper=".15" effort="1.0" velocity="0.5"/>
+        <axis xyz="0 0 1"/>
+    </joint>    
+    
+     <link name="coupler_link">
+
+        <collision name='coupling_collision'>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="1.0 0.3 .3"/>
+            </geometry>
+		</collision>
+        <inertial>
+            	<origin xyz="0 0 .1445" rpy="0 0 0"/>
+            	<mass value="40"/>
+            <inertia ixx="0.5" iyy=".5" izz=".8" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+        
+     </link>
+
+    
+    <joint name="coupler_link_joint" type="revolute">
+        <parent link="mainbody_link"/>
+        <child link="coupler_link"/>
+        <origin rpy="0 0 0" xyz="-1 0 .7"/>
+        <limit lower="-.25" upper=".25" effort="1.0" velocity="0.5"/>
+        <axis xyz="0 0 1"/>
+    </joint>   
+  <!-- _______________________________________________ Sensorik _______________________________________________ -->
+      
+	<link name="laser_link">
+    	<collision>
+            <origin xyz="0 0 0" rpy="0 0 1.57"/>
+            <geometry>
+                <box size="0.160 0.155 0.185"/>
+            </geometry>
+    	</collision>
+    	<visual>
+          <origin xyz="0 0 0" rpy="0 0 1.57"/>
+          <geometry>
+            <mesh filename="package://rotrac_e2_description/models/lidars/meshes/SICK_LMS511-20100_PRO.dae"/>            
+          </geometry>
+    	</visual>
+    	<inertial>
+          <origin xyz="0 0 0" rpy="0 0 1.57"/>
+          <mass value="3.7" />
+          <inertia ixx="0.01796" ixy="0.0" ixz="0.0" iyy="0.018446" iyz="0.0" izz="0.0153"/>
+        </inertial>
+  	</link>
+  	<joint name="laser_joint" type="fixed">
+    	<axis xyz="0 1 0"/>
+    	<origin rpy="0 0.523 0" xyz="0.74 0  0.65"/>
+    	<parent link="base_link"/>
+    	<child link="laser_link"/>
+  	</joint>
+  	<gazebo reference="laser_link">
+    	<mu1>0</mu1>
+    	<mu2>0</mu2>
+    	<material>Gazebo/Red</material>
+    	<sensor name="laser_sensor" type="ray">
+    	  <pose>0 0 0 0 0 0</pose>
+    	  <visualize>true</visualize>
+    	  <update_rate>25</update_rate>
+    	  <ray>
+    	    <scan>
+    	      <horizontal>
+    	        <samples>4286</samples>
+    	        <resolution>1</resolution>
+    	        <min_angle>-1.570796</min_angle>
+    	        <max_angle>1.570796</max_angle>
+    	      </horizontal>
+    	    </scan>
+    	    <range>
+    	      <min>0.7</min>
+    	      <max>80.0</max>
+    	      <resolution>0.007</resolution>
+    	    </range>
+    	    <noise>
+    	      <type>gaussian</type>
+    	      <mean>0.0</mean>
+    	      <stddev>0.01</stddev>
+    	    </noise>
+    	  </ray>
+    	  <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_front_laser_controller">
+    	    <topicName>/rotrac_e2/laser/scan</topicName>
+    	    <frameName>laser_link</frameName>
+    	  </plugin>
+    	</sensor>
+  	</gazebo>
+
+	<link name="front_laser_link">
+    	<collision>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <geometry>
+    	    <box size="0.01 0.01 0.01"/>
+    	  </geometry>
+    	</collision>
+    	<visual>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <geometry>
+    	    <box size="0.01 0.01 0.01"/>
+    	  </geometry>
+    	</visual>
+    	<inertial>
+    	  <mass value="1e-5"/>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    	</inertial>
+  	</link>
+  	<joint name="front_laser_joint" type="fixed">
+    	<axis xyz="0 1 0"/>
+    	<origin rpy="0 0 0" xyz="1.105 0  0.25"/>
+    	<parent link="base_link"/>
+    	<child link="front_laser_link"/>
+  	</joint>
+  	<gazebo reference="front_laser_link">
+    	<mu1>0</mu1>
+    	<mu2>0</mu2>
+    	<material>Gazebo/Red</material>
+    	<sensor name="front_laser_sensor" type="ray">
+    	  <pose>0 0 0 0 0 0</pose>
+    	  <visualize>false</visualize>
+    	  <update_rate>40</update_rate>
+    	  <ray>
+    	    <scan>
+    	      <horizontal>
+    	        <samples>720</samples>
+    	        <resolution>1</resolution>
+    	        <min_angle>-1.570796</min_angle>
+    	        <max_angle>1.570796</max_angle>
+    	      </horizontal>
+    	    </scan>
+    	    <range>
+    	      <min>0.010</min>
+    	      <max>30.0</max>
+    	      <resolution>0.01</resolution>
+    	    </range>
+    	    <noise>
+    	      <type>gaussian</type>
+    	      <!--Noise parameters based on published spec for Hokuyo laser
+								achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+								stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+								reading.-->
+    	      <mean>0.0</mean>
+    	      <stddev>0.01</stddev>
+    	    </noise>
+    	  </ray>
+    	  <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_front_laser_controller">
+    	    <topicName>/rotrac_e2/laser/front/scan</topicName>
+    	    <frameName>front_laser_link</frameName>
+    	  </plugin>
+    	</sensor>
+  	</gazebo>
+
+  	<link name="rear_laser_link">
+    	<collision>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <geometry>
+    	    <box size="0.01 0.01 0.01"/>
+    	  </geometry>
+    	</collision>
+    	<visual>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <geometry>
+    	    <box size="0.01 0.01 0.01"/>
+    	  </geometry>
+    	</visual>
+    	<inertial>
+    	  <mass value="1e-5"/>
+    	  <origin rpy="0 0 0" xyz="0 0 0"/>
+    	  <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    	</inertial>
+  	</link>
+  	<joint name="rear_laser_joint" type="fixed">
+    	<axis xyz="0 1 0"/>
+    	<origin rpy="0 0 3.141592" xyz="-0.78 0  0.15"/>
+    	<parent link="couplermouth_link"/>
+    	<child link="rear_laser_link"/>
+  	</joint>
+  	<gazebo reference="rear_laser_link">
+    	<mu1>0</mu1>
+    	<mu2>0</mu2>
+    	<material>Gazebo/Red</material>
+    	<sensor name="rear_laser_sensor" type="ray">
+      		<pose>0 0 0 0 0 0</pose>
+      		<visualize>false</visualize>
+      		<update_rate>40</update_rate>
+      		<ray>
+       	 		<scan>
+        			<horizontal>
+        				<samples>720</samples>
+        				<resolution>1</resolution>
+        				<min_angle>-1.570796</min_angle>
+        				<max_angle>1.570796</max_angle>
+        		  	</horizontal>
+        		</scan>
+        		<range>
+        	  		<min>0.010</min>
+        	  		<max>30.0</max>
+        	  	<resolution>0.01</resolution>
+        		</range>
+        		<noise>
+        	  		<type>gaussian</type>
+        	  		<!--Noise parameters based on published spec for Hokuyo laser
+								achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+								stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+								reading.-->
+        	  	<mean>0.0</mean>
+        	  	<stddev>0.01</stddev>
+        		</noise>
+      		</ray>
+      		<plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_rear_laser_controller">
+        		<topicName>/rotrac_e2/laser/rear/scan</topicName>
+        		<frameName>rear_laser_link</frameName>
+      		</plugin>
+    	</sensor>
+  	</gazebo>
+
+	<link name="camera_link">
+		<!-- Inertial for gazebo to take it into account, Put 1gr weight -->
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="0.001" />
+			<inertia ixx="9.1875e-09" ixy="0.0" ixz="0.0" iyy="9.1875e-09" iyz="0.0" izz="1.378125e-08"/>
+		</inertial>
+		<visual>
+			<origin rpy="0 0 0" xyz="-0.1 0 0"/>
+			<geometry>
+				<box size="0.2 0.05 0.05"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="camera_frame_optical"/>
+
+	<joint name="camera_optical_joint" type="fixed">
+			<origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+			<parent link="camera_link"/>
+			<child link="camera_frame_optical"/>
+	</joint>
+
+	<gazebo reference="camera_link">
+		
+		<mu1>0</mu1>
+		<mu2>0</mu2>
+		<material>Gazebo/Red</material>
+		<sensor type="depth" name="camera">
+			<update_rate>30.0</update_rate>
+			<camera name="head">
+				<pose>0 0 0 0 0 0</pose>
+				<horizontal_fov>1.3962634</horizontal_fov>
+				<image>
+					<width>1024</width>
+					<height>768</height>
+					<format>R8G8B8</format>
+				</image>
+				<clip>
+					<near>0.05</near>
+					<far>200</far>
+				</clip>
+				<noise>
+					<type>gaussian</type>
+					<stddev>0.007</stddev>
+				</noise>
+			</camera>
+			<plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
+				<baseline>0.2</baseline>
+				<alwaysOn>true</alwaysOn>
+				<!-- Keep this zero, update_rate in the parent <sensor> tag
+				will control the frame rate. -->
+				<updateRate>0.0</updateRate>
+				<cameraName>rotrac_e2/camera</cameraName>
+				<imageTopicName>/camera/color/image_raw</imageTopicName>
+				<cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
+				<depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
+				<depthImageCameraInfoTopicName>/camera/depth/camera_info</depthImageCameraInfoTopicName>
+				<pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
+				<frameName>camera_frame_optical</frameName>
+				<pointCloudCutoff>0.05</pointCloudCutoff>
+				<pointCloudCutoffMax>30.0</pointCloudCutoffMax>
+				<distortionK1>0</distortionK1>
+				<distortionK2>0</distortionK2>
+				<distortionK3>0</distortionK3>
+				<distortionT1>0</distortionT1>
+				<distortionT2>0</distortionT2>
+				<CxPrime>0</CxPrime>
+				<Cx>0</Cx>
+				<Cy>0</Cy>
+				<focalLength>0</focalLength>
+				<hackBaseline>0</hackBaseline>
+			</plugin>
+		</sensor>
+	</gazebo>
+
+    <joint name="base_camera_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="camera_link"/>
+        <origin rpy="0 0 0" xyz="0.6 0 0.89"/>
+    </joint>
+
+
+<!-- _______________________________________________ Driver _______________________________________________ -->
+
+	<gazebo>
+		<plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+			<updateRate>100.0</updateRate>
+			<leftFrontJoint>front_left_wheel_white_joint</leftFrontJoint>
+			<rightFrontJoint>front_right_wheel_white_joint</rightFrontJoint>
+			<leftRearJoint>rear_left_wheel_white_joint</leftRearJoint>
+			<rightRearJoint>rear_left_wheel_white_joint</rightRearJoint>
+			<MaxForce>50</MaxForce>
+			<robotBaseFrame>base_link</robotBaseFrame>
+			<robotNamespace>/</robotNamespace>
+			<torque>1000</torque>
+			<commandTopic>cmd_vel</commandTopic>
+			<odometryTopic>odom</odometryTopic>
+			<odometryFrame>odom</odometryFrame>
+			<broadcastTF>true</broadcastTF>
+			<wheelSeparation>1.15</wheelSeparation>
+			<wheelDiameter>0.492</wheelDiameter>
+			<covariance_x>0.00001</covariance_x>
+			<covariance_y>0.00001</covariance_y>
+			<covariance_yaw>0.01</covariance_yaw>
+		</plugin>
+	</gazebo>
+</robot>
