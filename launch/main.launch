@@ -17,6 +17,5 @@
     <include file="$(find rotrac_e2_description)/launch/rotrac_e2_control.launch"/>
     <!-- Visualize in Rviz   -->
     <include file="$(find rotrac_e2_description)/launch/visualize_in_rviz.launch"/>
-    <!-- Run cmd_vel converter -->
-    <node pkg="rotrac_e2_description" type="convert_vels.py" name="cmd_converter"/>
+
 </launch>
